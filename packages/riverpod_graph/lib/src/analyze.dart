@@ -571,6 +571,7 @@ class ProviderDependencyVisitor extends RecursiveAstVisitor<void> {
 
   @override
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    print('Visiting FamilyProvider: ${node.staticType}');
     if (node.constructorName.type.type?.element?.isFromRiverpod ?? false) {
       // An "normal" provider is being created.
       // ```dart
@@ -611,6 +612,17 @@ class ProviderDependencyVisitor extends RecursiveAstVisitor<void> {
           // We visit the node of the unnamed constructor and continue in
           // `visitArgumentList`.
           return newNode?.visitChildren(this);
+        }
+      } else {
+        // callメソッドが存在しない場合の処理
+        final buildMethod =
+            methods.firstWhereOrNull((method) => method.name == 'build');
+        if (buildMethod != null) {
+          final methodDeclaration =
+              unit.getElementDeclaration(buildMethod)?.node;
+          if (methodDeclaration != null) {
+            return methodDeclaration.visitChildren(this);
+          }
         }
       }
     }
