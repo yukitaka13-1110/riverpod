@@ -582,6 +582,9 @@ class ProviderDependencyVisitor extends RecursiveAstVisitor<void> {
     } else if (node.constructorName.type.type?.extendsFromRiverpod ?? false) {
       // A generated family provider is being created.
       final methods = (node.staticType as InterfaceType?)?.methods ?? const [];
+      for (final method in methods) {
+        print('${method.name}, ${method.runtimeType}, ${method.type}');
+      }
       if (methods.any((method) => method.name == 'call')) {
         // The provider is generated family provider.
         // ```dart
@@ -638,6 +641,9 @@ class ProviderDependencyVisitor extends RecursiveAstVisitor<void> {
     if (const {'watch', 'listen', 'read'}.contains(node.methodName.name) &&
         targetTypeElement != null &&
         targetTypeElement.isFromRiverpod) {
+      for (final a in node.argumentList.arguments) {
+        print('visitMethodInvocation: ${a.staticType}');
+      }
       final providerExpression = node.argumentList.arguments.firstOrNull;
       if (providerExpression == null) return;
 
