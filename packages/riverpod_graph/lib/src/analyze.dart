@@ -645,7 +645,10 @@ class ProviderDependencyVisitor extends RecursiveAstVisitor<void> {
         print('visitMethodInvocation: ${a.staticType}');
       }
       final providerExpression = node.argumentList.arguments.firstOrNull;
+
       if (providerExpression == null) return;
+
+      print('not null');
 
       final consumedProvider = parseProviderFromExpression(providerExpression);
       switch (node.methodName.name) {
@@ -737,38 +740,51 @@ String? _displayDocCommentForWidget(ClassElement definition) {
 VariableElement parseProviderFromExpression(
   Expression providerExpression,
 ) {
+  providerExpression.toString();
   if (providerExpression is PropertyAccess) {
+    print('PropertyAccess');
     final staticElement = providerExpression.propertyName.staticElement;
     if (staticElement is PropertyAccessorElement &&
         !staticElement.library.isFromRiverpod) {
+      print('PropertyAccessorElement && isFromRiverpod');
       // watch(SampleClass.familyProviders(id))
       return staticElement.declaration.variable2!;
     }
     final target = providerExpression.realTarget;
     return parseProviderFromExpression(target);
   } else if (providerExpression is PrefixedIdentifier) {
+    print('PrefixedIdentifier');
     if (providerExpression.name.isStartedUpperCaseLetter) {
+      print('isStartedUpperCaseLetter');
       // watch(SomeClass.provider)
       final Object? staticElement = providerExpression.staticElement;
       if (staticElement is PropertyAccessorElement) {
+        print('PropertyAccessorElement');
         return staticElement.declaration.variable2!;
       }
     }
     // watch(provider.modifier)
     return parseProviderFromExpression(providerExpression.prefix);
   } else if (providerExpression is Identifier) {
+    print('Identifier');
     // watch(variable)
     final Object? staticElement = providerExpression.staticElement;
     if (staticElement is PropertyAccessorElement) {
+      print('PropertyAccessorElement');
       return staticElement.declaration.variable2!;
     }
   } else if (providerExpression is FunctionExpressionInvocation) {
+    print('FunctionExpressionInvocation');
     // watch(family(id))
     return parseProviderFromExpression(providerExpression.function);
   } else if (providerExpression is MethodInvocation) {
+    print('MethodInvocation');
     // watch(variable.select(...)) or watch(family(id).select(...))
     final target = providerExpression.realTarget;
-    if (target != null) return parseProviderFromExpression(target);
+    if (target != null) {
+      print('target != null');
+      return parseProviderFromExpression(target);
+    }
   }
 
   throw UnsupportedError(
