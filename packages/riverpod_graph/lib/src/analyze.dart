@@ -740,7 +740,7 @@ String? _displayDocCommentForWidget(ClassElement definition) {
 VariableElement parseProviderFromExpression(
   Expression providerExpression,
 ) {
-  providerExpression.toString();
+  print(providerExpression);
   if (providerExpression is PropertyAccess) {
     print('PropertyAccess');
     final staticElement = providerExpression.propertyName.staticElement;
